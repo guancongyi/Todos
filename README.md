@@ -1,7 +1,7 @@
 # Todos
 A simple todo list that can keep track of what needs to be done every day
 
-# Screen Shot
+# Demo
 
 # Log
 03/10/2020
