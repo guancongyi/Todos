@@ -15,5 +15,10 @@ A simple todo list that can keep track of what needs to be done every day
 
 03/12/2020
 * Added log in/register pages, and finished the logic part for login.
-* Built a simple nodejs server with local SQL database to store user information.
+* Built a simple nodejs server with Mongo Atlas database to store user information.
 * Finished front-end and back-end communication using axios with CORS set on the server.
+
+04/04/202
+* Implemented Register and login with google part, giving user options to either register or directly login using google account.
+* Redesigned login and register page using Forms, Icons, and Layout within ant design.
+
