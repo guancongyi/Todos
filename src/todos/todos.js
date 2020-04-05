@@ -1,4 +1,4 @@
-import React,{Component, useState} from 'react';
+import React,{ useState} from 'react';
 import "../index.css";
 import Title from './title';
 import Add from './add';
@@ -15,7 +15,7 @@ function Todos (props){
             title:val,
             done:false
         });
-        let data2 = [...data]
+        // let data2 = [...data]
         // let data3 = [...data]
         // console.log(data2.length===data.length)
         // console.log(data2)

@@ -1,60 +1,112 @@
-import React,{Component, useState} from 'react';
+import React, {useState} from 'react';
+import { Button, Form, Input, message, Row, Col, Card } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import MyReCaptcha from './recaptcha';
 
-function Register(){
-    let [password, setPassword] = useState({
-        p1:"",
-        p2:""
-    })
+const FormItem = Form.Item;
+
+function Register() {
+    let [data, setData] = useState({
+        id: "",
+        p1: "",
+        p2: "",
+        email: ""
+    });
+    let [verified, setVerified] = useState(false)
+    function isVerified(verified) {
+        setVerified(verified)
+    }
+
+    let showError = (msg) => {
+        message.error(msg);
+    }
+
+
     return (
-        <div>
-            <p>Welcome To To-do List</p>
-            <p>Enter Your Username: </p>
-            < input 
-                placeholder="Username"
-                type="text"
-                onChange={()=>{
-                    let newName = new FormData();
-                    newName.append('username',newName);
-                }}
-            />
-            <p>Enter Your Password:</p>
-            < input 
-                placeholder="Password"
-                type="text"
-                onChange={({target})=>{
-                    setPassword({
-                        ...password,
-                        p1:target.value
-                    })
-                    console.log(password)
-                }}
-                onBlur={()=>{
-                    if(password.p1.length < 6){
-                        alert("Password should be at least 6 characters")
-                    }
-                }}
-            />
-            <p>Enter Your Password Again:</p>
-            < input 
-                placeholder="Password"
-                type="text"
-                onChange={()=>{
-                    setPassword({
-                        ...password,
-                        p2:target.value
-                    })
-                }}
-            />
-            <br></br>
-            <br></br>
-            
-            <button
-                onClick={()=>{
+        <Row type="flex" justify="center" align="middle" style={{ minHeight: '100vh' }}>
+            <Col>
+                <Card title="Welcome" style={{ 'textAlign': 'center' }}>
+                    <Form className="login-form">
+                        <FormItem name="username" rules={[{ required: true }]}>
+                            <Input prefix={<UserOutlined />} placeholder="Username"
+                                onChange={({ target }) => {
+                                    data.id = target.value;
+                                    setData({
+                                        ...data
+                                    })
+                                }} />
+                        </FormItem>
+                        <FormItem name="password" rules={[{ required: true }]}>
+                            <Input.Password prefix={<LockOutlined />} placeholder="Password"
+                                onChange={({ target }) => {
+                                    data.p1 = target.value
+                                    setData({
+                                        ...data
+                                    })
+                                }} />
+                        </FormItem>
 
-                }}
-            >Register</button>
+                        <FormItem name="password2" rules={[{ required: true }, {
+                            validator: (rule, value, callback) => {
+                                if (value && data.p1 != value) {
+                                    callback("Password doesn't match");
+                                }
+                                callback();
+                            }
 
-        </div>
+                        }]}>
+                            <Input.Password prefix={<LockOutlined />} placeholder="Password"
+                                onChange={({ target }) => {
+                                    data.p2 = target.value
+                                    setData({
+                                        ...data
+                                    })
+                                }} />
+                        </FormItem>
+                        <FormItem name="email" rules={[{ type: 'email' }, { required: true }]} hasFeedback>
+                            <Input prefix={<MailOutlined />} placeholder="Email"
+                                onChange={({ target }) => {
+                                    data.email = target.value
+                                    setData({
+                                        ...data
+                                    })
+                                }} />
+                        </FormItem>
+                        <FormItem>
+                            <MyReCaptcha
+                                isVerified={isVerified}
+                            />
+                        </FormItem>
+                        <FormItem>
+                            <Button type="primary" className="login-form-button"
+                                onClick={() => {
+                                    if (verified) {
+                                        let msg = new FormData();
+                                        msg.append('id', data.id);
+                                        msg.append('password', data.p1);
+                                        msg.append('email', data.email);
+                                        axios.post('http://localhost:8787/register', msg).then(res => {
+                                            if (res.data == 'ok') {
+                                                console.log(res.data)
+                                                window.location = '/login'
+                                            } else if (res.data == 'exist') {
+                                                showError("Username Exists.")
+                                            }
+
+                                        });
+                                    } else {
+                                        showError('Please verify you are a human!')
+
+                                    }
+                                }}>
+                                Register</Button>
+                        </FormItem>
+                    </Form>
+
+                </Card>
+            </Col>
+        </Row>
     )
 }
 

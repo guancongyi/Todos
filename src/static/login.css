@@ -1,0 +1,17 @@
+
+.login-form {
+    
+    max-width: 300px;
+}
+.login-form-forgot {
+    float: right;
+  }
+.login-form-button {
+    width: 100%;
+}
+
+.google_login_btn{
+  margin-top: 0.5em;
+  height: 32px;
+  width: 100%;
+}

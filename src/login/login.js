@@ -1,70 +1,88 @@
-import React,{Component, useState} from 'react';
-import { Form, Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
-import { Link } from 'react-router-dom';
-import axios from 'axios'
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Button, Form, Input, Checkbox, message, Row, Col, Card } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import MyGoogleLogin from './googleLogin';
+// import MyReCaptcha from './recaptcha';
+import '../static/login.css';
 
-function Login(props){
+const FormItem = Form.Item;
+
+function Login(props) {
     let [data, setData] = useState({
-        username:"",
-        password:""
+        id: "",
+        password: ""
     });
-    
+
+    let { getUserInfo } = props;
 
     return (
-        <div>
-            <p>Please Log In First :)</p>
-            <p>Username</p>
-            <input 
-                placeholder="Username"
-                onChange={({target})=>{
-                    data.username = target.value
-                    setData({
-                        ...data
-                    })
-                }}
-            />
-            <p>Password</p>
-            < input 
-                placeholder="Password"
-                type="text"
-                onChange={({target})=>{
-                    data.password = target.value
-                    setData({
-                        ...data
-                    })
-                }}
-            />
-            <br></br>
-            <br></br>
-            
-            <button
-                onClick={()=>{
-                    let {getStatus} = props;
-                    let user = data["username"];
-                    let pwd = data["password"];
-                    let msg = new FormData();
-                    msg.append('username',user);
-                    msg.append('password', pwd);
+        <Row type="flex" justify="center" align="middle" style={{ minHeight: '100vh' }}>
+            <Col>
+                <Card title="My To-do List" style={{ textAlign: 'center' }}>
+                    <Form onSubmit={() => { }} className="login-form">
+                        <FormItem name="username" >
+                            <Input prefix={<UserOutlined />} placeholder="Username"
+                                onChange={({ target }) => {
+                                    data.id = target.value
+                                    setData({
+                                        ...data
+                                    })
+                                }} />
+                        </FormItem>
+                        <FormItem name="password" >
+                            <Input.Password prefix={<LockOutlined />} placeholder="Password"
+                                onChange={({ target }) => {
+                                    data.password = target.value
+                                    setData({
+                                        ...data
+                                    })
+                                }} />
+                        </FormItem>
+                        <FormItem>
+                            {/* <Checkbox>Remember me</Checkbox> */}
+                            {/* <a className="login-form-forgot" href="">Forgot password</a> */}
+                            <Button type="primary" className="login-form-button"
+                                onClick={() => {
+                                    let id = data["id"];
+                                    let pwd = data["password"];
+                                    if (id == '' || pwd == '') {
+                                        message.error("Incorrect, Please check username/password.")
+                                    } else {
+                                        let msg = new FormData();
+                                        msg.append('id', id);
+                                        msg.append('password', pwd);
+                                        msg.append('isGoogle', false);
 
-                    console.log(msg.getAll('username'))
-                    // let strData = JSON.stringify({user,pwd})
-                    axios.post('http://localhost:8787/login',msg).then(res=>{
-                        let ret = res.data
-                        if (ret == 'not exist'){
-                            alert("The username doesn't exist.")
-                        }else if(ret == 'incorrect'){
-                            alert("Incorrect, Please check username/password.")
-                        }else{
-                            getStatus();
-                        }
-                    });
+                                        // let strData = JSON.stringify({user,pwd})
+                                        axios.post('http://localhost:8787/login', msg).then(res => {
+                                            let ret = res.data
+                                            if (ret == 'ok') {
+                                                getUserInfo({
+                                                    isGoogle: false,
+                                                    id: id,
+                                                    name: id,
+                                                });
+                                            } else if (ret == 'wrong') {
+                                                message.error("Incorrect, Please check username/password.")
+                                            }
+                                        });
+                                    }
+                                }}>
+                                Log in</Button>
+                            <div>
+                                <span ><MyGoogleLogin {...props}/></span>
 
-                }}
-            >submit</button>
-            <Link 
-                to="/register"
-            >don't have an account yet?</Link>
-        </div>
+                                <a style={{ float: 'right' }} href="/register">
+                                    Register
+                                    </a>
+                            </div>
+                        </FormItem>
+                    </Form>
+                </Card>
+
+            </Col>
+        </Row>
     )
 }
 

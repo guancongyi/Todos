@@ -1,4 +1,4 @@
-import React,{Component} from 'react';
+import React from 'react';
 
 function Stats(props){
     let {data,clearSelected} = props;

@@ -1,5 +1,5 @@
-import React,{Component, useState} from 'react';
-import {Switch, Route, Redirect, Router} from 'react-router-dom';
+import React,{ useState } from 'react';
+import {Switch, Route, Redirect} from 'react-router-dom';
 import "./index.css";
 import Todos from './todos/todos';
 import Login from './login/login'
@@ -8,11 +8,12 @@ import Page404 from './page404';
 
 function App (props){
     let [login, setLogin] = useState(false)
-    let getStatus =()=>{
+    let getUserInfo =(id)=>{
         login = true;
         setLogin(login)
         console.log(login)
     }
+
     return (
         <Switch>
             <Route path="/" exact render={(props)=>{
@@ -21,11 +22,12 @@ function App (props){
             <Route path="/login" exact render={(props)=>{
                 return(
                     login?<Redirect to="/todo" />
-                    :<Login getStatus={getStatus}/>
+                    :<Login getUserInfo={getUserInfo}/>
                 )
             }}/>
             <Route path="/register" exact component={Register}/>
             {login && <Route path="/todo" exact component={Todos} />}
+            
             <Route path="*" exact component={Page404}/>
         </Switch>  
     
