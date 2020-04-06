@@ -1,4 +1,23 @@
-html, body, div, span, applet, object, iframe,
+.trigger {
+    font-size: 18px;
+    line-height: 64px;
+    padding: 0 16px;
+    cursor: pointer;
+    transition: color .3s;
+  }
+  
+.trigger:hover {
+    color: #108ee9;
+  }
+  
+.logo {
+    height: 32px;
+    background: #333;
+    border-radius: 6px;
+    margin: 16px;
+  }
+
+  html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, font, img, ins, kbd, q, s, samp,
@@ -148,7 +167,7 @@ html {
     cursor: pointer;
     width: 20px;
     height: 20px;
-    background: url(./destroy.png) no-repeat 0 0;
+    background: url(../../destroy.png) no-repeat 0 0;
   }
     #todo-list li:hover .todo-destroy {
       display: block;

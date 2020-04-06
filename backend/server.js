@@ -16,6 +16,25 @@ app.use(koaBody({
 const uri = "mongodb+srv://guan:Apply2015!@cluster0-kldaq.mongodb.net/test?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useUnifiedTopology: true });
 
+let EMPTYUSER = {
+    "id": "",
+    "password": "",
+    "name":"",
+    'isGoogle': false,
+    'email': ""
+}
+
+const EMPTYLIST = {
+    "name": "",
+    "tasks": []
+}
+
+let TASK = {
+    "name": "",
+    "time": "",
+    "date":"",
+}
+
 router.get("/", ctx => {
     ctx.redirect("/index")
 })
@@ -39,7 +58,7 @@ router.post("/register", async ctx => {
             let col = client.db('todos').collection('users');
             col.findOne({ "id": id }, function (err, doc) {
                 if (doc == null) {
-                    col.insertOne({ "id": id, "password": hash, 'isGoogle': false, 'email':email, 'today': [] }, (err, result) => {
+                    col.insertOne({ "id": id, "password": hash, 'isGoogle': false, 'email': email}, (err, result) => {
                         if (result.result.ok) {
                             // console.log(result)
                             resolve('ok')
@@ -76,7 +95,7 @@ router.post("/login", async ctx => {
                 let col = client.db('todos').collection('users');
                 col.findOne({ "id": id }, function (err, doc) {
                     if (doc == null) {
-                        col.insertOne({ "id": id, "name": name, 'isGoogle': isGoogle, 'email':email, 'today': [] }, (err, result) => {
+                        col.insertOne({ "id": id, "name": name, 'isGoogle': isGoogle, 'email': email }, (err, result) => {
                             if (result.result.ok) {
                                 // console.log(result)
                                 resolve('ok')
@@ -98,11 +117,11 @@ router.post("/login", async ctx => {
         ctx.body = await new Promise((resolve, reject) => {
             client.connect(function (err, client) {
                 let col = client.db('todos').collection('users');
-                col.findOne({ "id": id}, function (err, doc) {
-                    bcrypt.compare(pwd, doc.password, function(err, res){
-                        if(res == true){
+                col.findOne({ "id": id }, function (err, doc) {
+                    bcrypt.compare(pwd, doc.password, function (err, res) {
+                        if (res == true) {
                             resolve('ok')
-                        }else{
+                        } else {
                             client.close();
                             resolve("wrong")
                         }
@@ -111,8 +130,37 @@ router.post("/login", async ctx => {
             });
         })
     }
+})
 
 
+router.get('/getLists', async ctx => {
+    ctx.set("Access-Control-Allow-Origin", "http://localhost:3000");
+    let uid = ctx.request.query['uid'];
+
+    ctx.body = await new Promise((resolve, reject) => {
+        client.connect(function (err, client, status) {
+            let col = client.db('todos').collection('data');
+            col.findOne({ "uid": uid }, function (err, doc) {
+                if (doc == null) { // first time user
+                    let list = JSON.parse(JSON.stringify(EMPTYLIST));;
+                    list.name = "all tasks"
+
+                    col.insertOne({'uid': uid, 'lists':list}, (err, result) => {
+                        if (result.result.ok) {
+                            resolve(list)
+                        }
+                        resolve("wrong")
+                    })
+                } else { // user has lists already
+                    console.log(doc)
+                    resolve(doc.lists)
+                }
+
+            })
+
+        });
+
+    })
 })
 
 app.use(router.routes());

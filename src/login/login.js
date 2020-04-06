@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Form, Input, Checkbox, message, Row, Col, Card } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import MyGoogleLogin from './googleLogin';
 // import MyReCaptcha from './recaptcha';
-import '../static/login.css';
+import '../static/css/login.css';
 
 const FormItem = Form.Item;
 
@@ -54,7 +54,7 @@ function Login(props) {
                                         msg.append('password', pwd);
                                         msg.append('isGoogle', false);
 
-                                        // let strData = JSON.stringify({user,pwd})
+                                        // get login info
                                         axios.post('http://localhost:8787/login', msg).then(res => {
                                             let ret = res.data
                                             if (ret == 'ok') {
@@ -67,6 +67,7 @@ function Login(props) {
                                                 message.error("Incorrect, Please check username/password.")
                                             }
                                         });
+                                       
                                     }
                                 }}>
                                 Log in</Button>

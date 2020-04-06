@@ -1,17 +1,23 @@
-import React,{ useState } from 'react';
+import React,{ useState, useEffect } from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
-import "./index.css";
 import Todos from './todos/todos';
 import Login from './login/login'
 import Register from './login/register';    
 import Page404 from './page404';
 
 function App (props){
-    let [login, setLogin] = useState(false)
-    let getUserInfo =(id)=>{
-        login = true;
-        setLogin(login)
-        console.log(login)
+    let [userInfo, setUserInfo] = useState({
+        login:false,
+        id: "",
+        name: ""
+    })
+    let getUserInfo =(data)=>{
+        setUserInfo({
+            ...userInfo,
+            login:true,
+            id:data.id,
+            name:data.name
+        })
     }
 
     return (
@@ -21,12 +27,14 @@ function App (props){
             }} />
             <Route path="/login" exact render={(props)=>{
                 return(
-                    login?<Redirect to="/todo" />
+                    userInfo.login?<Redirect to="/todo" />
                     :<Login getUserInfo={getUserInfo}/>
                 )
             }}/>
             <Route path="/register" exact component={Register}/>
-            {login && <Route path="/todo" exact component={Todos} />}
+            {userInfo.login && <Route path="/todo" exact render={(props)=>{
+                return <Todos userInfo = {userInfo}/>
+            }} />}
             
             <Route path="*" exact component={Page404}/>
         </Switch>  

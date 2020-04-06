@@ -1,13 +1,15 @@
 import React,{ useState} from 'react';
+import { Input } from 'antd';
 function Add(props){
     let {add} = props;
     let [val, setVal] = useState("");
     return <div id="create-todo">
-            <input 
-                id="new-todo"
+
+            <Input 
+                // id="new-todo"
                 placeholder="What needs to be done?"
-                type="text"
-                autoComplete="off"
+                style={{ width: '80%', height: '70%' }}
+
                 value={val}
                 onChange={({target})=>{
                     setVal(target.value)
