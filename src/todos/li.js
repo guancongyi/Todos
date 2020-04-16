@@ -1,8 +1,11 @@
 import React,{Component, useState, useEffect, useRef} from 'react';
 
 function Li(props){
-    let {data, changeDone, deleteTask, editTask} = props;   
-    let {id, title, done} = data; 
+    let {data, changeDone, deleteTask, editTask} = props;  
+    // console.log(data) 
+    let {id, title,done,time, date, detail} = data; 
+ 
+
     let [val, setVal] = useState(title)
     let [editing, setEditing] = useState(false)
     let [prevEditing, setPrevEditing] = useState(editing)

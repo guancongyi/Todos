@@ -11,7 +11,7 @@ const FormItem = Form.Item;
 function Login(props) {
     let [data, setData] = useState({
         id: "",
-        password: ""
+        password: "" // testing
     });
 
     let { getUserInfo } = props;

@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, Layout } from 'antd';
 import { Icon } from '@ant-design/compatible';
 
@@ -6,7 +6,7 @@ const { Sider } = Layout;
 const { SubMenu } = Menu;
 
 function MySider(props) {
-    let { collapsed, userLists} = props
+    let { collapsed, userLists } = props
     console.log(userLists)
 
     return (
@@ -17,7 +17,7 @@ function MySider(props) {
             collapsedWidth={0}
         >
             <div className="logo" />
-            <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+            <Menu theme="dark" mode="inline" defaultOpenKeys={['2']} defaultSelectedKeys={["3"]}>
                 <Menu.Item key="1">
                     <Icon style={{ fontSize: '20px' }} type="calendar" />
                     <span>Calendar</span>
@@ -30,9 +30,9 @@ function MySider(props) {
                         </span>
                     }>
                     {
-                        Object.keys(userLists).map((k,id) =>{
-                            // console.log(userLists[k].name)
-                            return (<Menu.Item key={2+id+"1"}>{userLists[k].name}</Menu.Item>)
+                        userLists.map((list, id) => {
+                            console.log(2 + id + 1 + '')
+                            return <Menu.Item key={2 + id + 1 + ''}>{list}</Menu.Item>
                         })
                     }
                     {/* <Menu.Item key="3">All Tasks</Menu.Item> */}

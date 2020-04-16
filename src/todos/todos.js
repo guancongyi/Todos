@@ -17,7 +17,7 @@ const { Header, Content } = Layout;
 function Todos(props) {
     let [data, setData] = useState([]);
     let [collapsed, setCollapsed] = useState(false);
-    let [userLists, setUserLists] = useState({})
+    let [userLists, setUserLists] = useState([])
 
     let { userInfo } = props
     let { id, name } = userInfo
@@ -25,8 +25,18 @@ function Todos(props) {
     // get lists and tasks info
     useEffect(() => {
         console.log(id)
-        axios.get(`http://localhost:8787/getLists?uid=${id}`).then(res => {
-            setUserLists(res.data)
+        axios.get(`http://localhost:8787/getLists?id=${id}`).then(res => {
+            console.log(res)
+            let lists = res.data.lists;
+            let liNames = [];
+            let data = [];
+            for (let i = 0; i<lists.length; i++){
+                liNames.push(lists[i].name)
+                if (lists[i].name == "all tasks") data = lists[i].tasks
+            }
+            setUserLists([...liNames])
+            console.log(liNames)
+            setData([...data])
         });
     },[id])
 
@@ -82,7 +92,6 @@ function Todos(props) {
     let getCollapseStatus = (status) => {
         setCollapsed(status)
     }
-
 
     return (
         <Layout>
