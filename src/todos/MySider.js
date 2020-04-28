@@ -8,7 +8,7 @@ const { SubMenu } = Menu;
 function MySider(props) {
     let [selected, setSelected] = useState("3");
 
-    let { siderInfo, getSelectedList} = props;
+    let { siderInfo, getSelectedListId} = props;
     let listNames = siderInfo.listNames;
     let collapsed = siderInfo.collapsed;
     
@@ -33,7 +33,7 @@ function MySider(props) {
                 onClick={(e) => {
                     console.log(e.key)
                     setSelected(e.key);
-                    getSelectedList(listNames[parseInt(e.key)-2-1])
+                    getSelectedListId(parseInt(e.key)-2-1)
                 }}>
                 <Menu.Item key="1">
                     <Icon style={{ fontSize: '20px' }} type="calendar" />

@@ -3,7 +3,7 @@ import Li from './li'
 
 function TodosList(props) {
     let { data } = props;  
-
+    console.log(data)
     return (
         <ul id="todo-list">
             {
