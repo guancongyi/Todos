@@ -46,7 +46,7 @@ function Login(props) {
                                 onClick={() => {
                                     let id = data["id"];
                                     let pwd = data["password"];
-                                    if (id == '' || pwd == '') {
+                                    if (id === '' || pwd === '') {
                                         message.error("Incorrect, Please check username/password.")
                                     } else {
                                         let msg = new FormData();
@@ -55,15 +55,15 @@ function Login(props) {
                                         msg.append('isGoogle', false);
 
                                         // get login info
-                                        axios.post('http://localhost:8787/login', msg).then(res => {
+                                        axios.post('http://192.168.1.141:8787/login', msg).then(res => {
                                             let ret = res.data
-                                            if (ret == 'ok') {
+                                            if (ret === 'ok') {
                                                 getUserInfo({
                                                     isGoogle: false,
                                                     id: id,
                                                     name: id,
                                                 });
-                                            } else if (ret == 'wrong') {
+                                            } else if (ret === 'wrong') {
                                                 message.error("Incorrect, Please check username/password.")
                                             }
                                         });

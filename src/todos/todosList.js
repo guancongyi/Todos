@@ -2,18 +2,16 @@ import React from 'react';
 import Li from './li'
 
 function TodosList(props) {
-    let { data } = props;
-    console.log(data);
+    let { data } = props;  
+
     return (
         <ul id="todo-list">
             {
                 // all tasks
-                
-                (data.length != 0)?data.map((item, id) => {
-                    console.log(item)
+                (data.length !== 0)?data.map((item, id) => {
                     return (<Li
                         {...props}
-                        key={id}
+                        key={JSON.stringify(item)}
                         data={item}
                     />)
                 }) : ""

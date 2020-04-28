@@ -86,7 +86,7 @@ function Register() {
                                         msg.append('id', data.id);
                                         msg.append('password', data.p1);
                                         msg.append('email', data.email);
-                                        axios.post('http://localhost:8787/register', msg).then(res => {
+                                        axios.post('http://192.168.1.141:8787/register', msg).then(res => {
                                             if (res.data == 'ok') {
                                                 console.log(res.data)
                                                 window.location = '/login'

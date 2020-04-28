@@ -10,35 +10,83 @@ import TodosList from './todosList';
 import MySider from './MySider'
 import Stats from './stats';
 import MyHeader from './MyHeader';
+import qs from 'qs';
 
 const { Header, Content } = Layout;
 
 
 function Todos(props) {
+    // data is an array that contains all user's list
     let [data, setData] = useState([]);
-    let [collapsed, setCollapsed] = useState(false);
-    let [userLists, setUserLists] = useState([])
+    let [allLists, setAllLists] = useState({});
 
-    let { userInfo } = props
+    // current selected list "all_tasks"
+    let [currList, setCurrList] = useState("all tasks");
+    // sider status
+    let [siderInfo, setSiderInfo] = useState({
+        collapsed: false,
+        listNames: []
+    });
+
+    let { userInfo } = props;
     let { id, name } = userInfo
 
     // get lists and tasks info
     useEffect(() => {
-        console.log(id)
+        console.log('logged in')
         axios.get(`http://localhost:8787/getLists?id=${id}`).then(res => {
-            console.log(res)
+
             let lists = res.data.lists;
             let liNames = [];
-            let data = [];
-            for (let i = 0; i<lists.length; i++){
+            let allData = {};
+            
+            for (let i = 0; i < lists.length; i++) {
                 liNames.push(lists[i].name)
+                allData[lists[i].name] = lists[i].tasks;
                 if (lists[i].name == "all tasks") data = lists[i].tasks
             }
-            setUserLists([...liNames])
-            console.log(liNames)
+            // store lists
+            setAllLists(allData)
+            // store sider info
+            setSiderInfo({
+                ...siderInfo,
+                listNames: [...liNames]
+            })
+            // store current data
             setData([...data])
         });
-    },[id])
+    }, [id])
+
+    // update data
+    useEffect(() => {
+        console.log('data updated in '+ currList);
+        let msg = new FormData();
+        msg.append('id', id);
+        msg.append('list', currList);
+        msg.append('data', qs.stringify(data));
+
+        axios.post('http://localhost:8787/setList', msg).then(res => {
+            // console.log(res)
+            // console.log(allLists)
+
+            // update all lists 
+            allLists[currList] = data
+            setAllLists({
+                ...allLists,
+            });
+        });
+    }, [data])
+
+    // switching list
+    useEffect(() => {
+        console.log('list changed to '+ currList);
+        let curr = allLists[currList]
+        if(curr != undefined){
+            setData([...curr])
+        }
+            
+        
+    }, [currList])
 
     // add task
     let add = (val) => {
@@ -47,15 +95,9 @@ function Todos(props) {
             title: val,
             done: false
         });
-        // let data2 = [...data]
-        // let data3 = [...data]
-        // console.log(data2.length===data.length)
-        // console.log(data2)
-        // console.log(data)
-
         setData([...data])
     }
-    //on check
+    //on task finished
     let changeDone = (id, done) => {
         console.log(id, done)
         data.forEach((item) => {
@@ -88,14 +130,22 @@ function Todos(props) {
         setData([...data])
     }
 
+    // Sider Related
     // collapsed button click callback
     let getCollapseStatus = (status) => {
-        setCollapsed(status)
+        setSiderInfo({
+            ...siderInfo,
+            collapsed: status
+        })
+    }
+    // selected sider
+    let getSelectedList = (name) => {
+        setCurrList(name);
     }
 
     return (
         <Layout>
-            <MySider collapsed={collapsed} userLists={userLists} />
+            <MySider siderInfo={siderInfo} getSelectedList={getSelectedList} />
             <Layout>
                 <MyHeader getCollapseStatus={getCollapseStatus} />
                 <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>

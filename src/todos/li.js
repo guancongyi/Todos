@@ -1,19 +1,20 @@
-import React,{Component, useState, useEffect, useRef} from 'react';
+import React,{ useState, useEffect, useRef} from 'react';
 
 function Li(props){
-    let {data, changeDone, deleteTask, editTask} = props;  
-    // console.log(data) 
-    let {id, title,done,time, date, detail} = data; 
- 
 
+    let {data, changeDone, deleteTask, editTask} = props;  
+    let {id, title, done, time, date, detail} = data; 
+    
+ 
     let [val, setVal] = useState(title)
     let [editing, setEditing] = useState(false)
     let [prevEditing, setPrevEditing] = useState(editing)
     let todoInput = useRef()
+    
     useEffect(()=>{
         console.log("update editing")
         // setPrevEditing(editing)
-        console.log(prevEditing,editing)
+        // console.log(prevEditing,editing)
         if(prevEditing == false && editing == true){
             console.log(1)
             todoInput.current.focus()
@@ -29,7 +30,7 @@ function Li(props){
                         type="checkbox" 
                         checked={done}
                         onChange={({target})=>{
-                            console.log("onchange")
+                            console.log(target)
                             changeDone(id, target.checked)
                         }}
                     />

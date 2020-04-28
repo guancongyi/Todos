@@ -6,8 +6,17 @@ const { Sider } = Layout;
 const { SubMenu } = Menu;
 
 function MySider(props) {
-    let { collapsed, userLists } = props
-    console.log(userLists)
+    let [selected, setSelected] = useState("3");
+
+    let { siderInfo, getSelectedList} = props;
+    let listNames = siderInfo.listNames;
+    let collapsed = siderInfo.collapsed;
+    
+
+    // useEffect(()=>{
+    //     console.log(listNames[parseInt(selected)-2-1])
+    //     getSelectedList(listNames[parseInt(selected)-2-1])
+    // },[listNames])
 
     return (
         <Sider
@@ -17,7 +26,15 @@ function MySider(props) {
             collapsedWidth={0}
         >
             <div className="logo" />
-            <Menu theme="dark" mode="inline" defaultOpenKeys={['2']} defaultSelectedKeys={["3"]}>
+            <Menu theme="dark"
+                mode="inline"
+                defaultOpenKeys={['2']}
+                selectedKeys={[selected]}
+                onClick={(e) => {
+                    console.log(e.key)
+                    setSelected(e.key);
+                    getSelectedList(listNames[parseInt(e.key)-2-1])
+                }}>
                 <Menu.Item key="1">
                     <Icon style={{ fontSize: '20px' }} type="calendar" />
                     <span>Calendar</span>
@@ -30,8 +47,7 @@ function MySider(props) {
                         </span>
                     }>
                     {
-                        userLists.map((list, id) => {
-                            console.log(2 + id + 1 + '')
+                        listNames.map((list, id) => {
                             return <Menu.Item key={2 + id + 1 + ''}>{list}</Menu.Item>
                         })
                     }
