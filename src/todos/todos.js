@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Button, Radio, Card, Row, Col, Avatar, PageHeader, Typography } from 'antd';
-import { Icon } from '@ant-design/compatible';
+import { Layout, Radio, Card, Row, Col, Typography, Modal } from 'antd';
 import axios from 'axios';
-import { SettingFilled, SyncOutlined } from '@ant-design/icons';
 import "../static/css/todos.css"
 import Title from './title';
 import Add from './add';
@@ -11,46 +9,58 @@ import MySider from './MySider'
 import Stats from './stats';
 import MyHeader from './MyHeader';
 import qs from 'qs';
-
 const { Header, Content } = Layout;
 
+const ALL_TASKS = 0;
+const DEFAULT_LIST = 1;
 
 function Todos(props) {
-    // data is an array that contains all user's list
+    // data is user's current selected list
     let [data, setData] = useState([]);
+    // data is user's lists
     let [allData, setAllData] = useState([]);
-
-    // current selected list "all_tasks"
+    // current selected list id
     let [currId, setCurrId] = useState(0);
+    // a look up table for finding task : 
+    // task id : list id
+    let [buffer, setBuffer] = useState({});
     // sider status
     let [siderInfo, setSiderInfo] = useState({
+        id: "",
         collapsed: false,
-        listNames: []
+        listNames: [],
+        listAdded: false
     });
 
     let { userInfo } = props;
     let { id, name } = userInfo
 
-    // get lists and tasks info
+    // get lists and tasks info upon login 
     useEffect(() => {
-        console.log('logged in')
+        console.log('logged in');
         axios.get(`http://192.168.1.141:8787/getLists?id=${id}`).then(res => {
-
             let lists = res.data.lists;
             let liNames = [];
-
             for (let i = 0; i < lists.length; i++) {
-                liNames.push(lists[i].name)
-                allData.push(lists[i].tasks);
-            }
+                liNames.push(lists[i].name);
+                let tasks = lists[i].tasks;
+                allData.push(tasks);
 
+                for (let j = 0; j < tasks.length; j++) {
+                    if (tasks[j].id in buffer) buffer[tasks[j].id].push(i);
+                    else buffer[tasks[j].id] = [i];
+                }
+            }
             data = allData[currId]
+            // store buffer
+            setBuffer(buffer);
             // store lists
             setAllData([...allData])
             // store sider info
             setSiderInfo({
                 ...siderInfo,
-                listNames: [...liNames]
+                listNames: [...liNames],
+                id: id,
             })
             // store current data
             setData([...data])
@@ -59,73 +69,114 @@ function Todos(props) {
 
     // update data
     useEffect(() => {
-        console.log('data updated in '+ currId);
+        console.log('data updated in ' + currId);
+
         let msg = new FormData();
         msg.append('id', id);
         msg.append('list', currId);
         msg.append('data', qs.stringify(data));
-
         axios.post('http://192.168.1.141:8787/setList', msg).then(res => {
-            // console.log(res)
-            // console.log(allLists)
-
             // update all lists 
             allData[currId] = data
-            setAllData({
-                ...allData,
-            });
+            setAllData([...allData]);
         });
     }, [data])
 
     // switching list
     useEffect(() => {
-        console.log('list changed to '+ currId);
-        let temp = allData[currId]
-        if(temp != undefined){
-            setData([...temp])
-        }
+        console.log('list changed to ' + currId);
+        data = allData[currId];
+        if (data != undefined) setData([...data]);
     }, [currId])
 
     // add task
     let add = (val) => {
-        data.push({
+        console.log(buffer)
+        let item = {
             id: Date.now(),
             title: val,
             done: false
-        });
-        setData([...data])
+        }
+        // add to curr data list
+        data.push(item);
+
+
+        // if curr is all tasks, add to default selected task
+        if (currId == ALL_TASKS) {
+            if (allData.length > 1) {
+                allData[DEFAULT_LIST].push(item);
+                buffer[item.id] = [ALL_TASKS, DEFAULT_LIST];
+            } else {
+                // prompt user to create a default list
+            }
+        }
+        // otherwise add to curr list and all tasks 
+        else {
+            allData[ALL_TASKS].push(item);
+            buffer[item.id] = [ALL_TASKS, currId];
+        }
+        setData([...data]);
+        setAllData([...allData]);
+        setBuffer(buffer);
+
     }
     //on task finished
     let changeDone = (id, done) => {
-        console.log(id, done)
+        // change current (data)
         data.forEach((item) => {
-            if (item.id == id) {
-                item.done = done;
-            }
+            if (item.id == id) item.done = done;
         });
-        setData([...data])
+
+        // change all occurance in others(all data)
+        buffer[id].map((item) => {
+            allData[item].forEach((task) => {
+                if (task.id == id) task.done = done;
+            });
+        })
+        setData([...data]);
+        setAllData(allData);
     }
     // delete single task
     let deleteTask = (id, done) => {
-        setData(data.filter((item) => item.id != id))
+        // delete others in all Data
+        for (let i = buffer[id].length - 1; i >= 0; i--) {
+            let lid = buffer[id][i];
+
+            allData[lid] = allData[lid].filter((task) => task.id != id);
+            buffer[id].splice(i, 1);
+        }
+        delete buffer[id];
+        // delete current
+        setData(data.filter((item) => item.id != id));
+        setAllData(allData);
     }
     // edit task
     let editTask = (id, newTitle) => {
+        console.log(buffer)
         data.forEach((item) => {
             if (item.id == id) {
                 item.title = newTitle;
             }
         });
-        setData([...data])
+        setData([...data]);
     }
     // delete selected
     let clearSelected = () => {
         for (let i = data.length - 1; i >= 0; i--) {
             if (data[i].done == true) {
-                data.splice(i, 1)
+                let tid = data[i].id;
+                // for each task to be deleted, get all lists that contain the task
+                for (let j = buffer[tid].length - 1; j >= 0; j--) {
+                    let lid = buffer[tid][j];
+                    allData[lid] = allData[lid].filter((task) => task.id != tid);
+                    buffer[tid].splice(j, 1);
+                }
+                delete buffer[id];
+                data.splice(i, 1);
             }
         }
-        setData([...data])
+        setData([...data]);
+        setAllData(allData);
     }
 
     // Sider Related
@@ -140,11 +191,18 @@ function Todos(props) {
     let getSelectedListId = (lid) => {
         setCurrId(lid);
     }
-
+    // after adding new list, server got new list, 
+    // here local update all data so that local and server match
+    let newListAdded = (lId) => {
+        setCurrId(lId);
+        allData.push([]);
+        setAllData(allData);
+        setData(allData[lId]);
+    }
 
     return (
         <Layout>
-            <MySider siderInfo={siderInfo} getSelectedListId={getSelectedListId} />
+            <MySider siderInfo={siderInfo} getSelectedListId={getSelectedListId} newListAdded={newListAdded} />
             <Layout>
                 <MyHeader getCollapseStatus={getCollapseStatus} />
                 <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
@@ -190,30 +248,6 @@ function Todos(props) {
                 </Content>
             </Layout>
         </Layout >)
-
-
-    // return <div id="todoapp">
-
-    //     <Title />
-    // <div className="content">
-    //     <Add 
-    //         add = {add}
-    //     />
-    //     <TodosList 
-    //         data={data}
-    //         changeDone={changeDone}
-    //         deleteTask={deleteTask}
-    //         editTask = {editTask}
-    //     />
-    // </div>
-    //     {data.length > 0?
-    //     <Stats 
-    //         data = {data}
-    //         clearSelected={clearSelected}
-    //     />:""}
-
-    // </div>
-
 }
 
 export default Todos;
