@@ -12,7 +12,7 @@ function MyHeader(props) {
     return (
         <Header style={{ background: '#fff', padding: 0 }}>
             <Icon
-                style={{fontSize:'25px'}}
+                style={{fontSize:'25px', padding:'10px'}}
                 className="trigger"
                 type={collapsed ? 'menu-unfold' : 'menu-fold'}
                 onClick={() => {

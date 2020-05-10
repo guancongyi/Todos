@@ -36,10 +36,13 @@ function MySider(props) {
             trigger={null}
             collapsible
             collapsed={collapsed}
-            collapsedWidth={0}
+            style={{ width: 256 }} 
+            // collapsedWidth={0}
         >
             <div className="logo" />
-            <Menu theme="dark"
+            <Menu
+                
+                theme="dark"
                 mode="inline"
                 defaultOpenKeys={['2']}
                 selectedKeys={[selected]}
@@ -63,7 +66,7 @@ function MySider(props) {
                             return <Menu.Item key={2 + id + 1 + ''}>{list}</Menu.Item>
                         })
                     }
-                    <Menu.Item>
+                    <Menu.Item disabled={true}>
                         <Button type="link" onClick={() => {
                             setShowPop(true);
                             setCreateList(false);

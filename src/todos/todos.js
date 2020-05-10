@@ -201,14 +201,19 @@ function Todos(props) {
     }
 
     return (
-        <Layout>
+
+        <Layout >
             <MySider siderInfo={siderInfo} getSelectedListId={getSelectedListId} newListAdded={newListAdded} />
-            <Layout>
+            <Layout style={{ minHeight: '100vh' }}>
                 <MyHeader getCollapseStatus={getCollapseStatus} />
-                <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
+                <Content style={{
+                    margin: '24px 16px',
+                    padding: 24,
+                    minHeight: 280,
+                }}>
                     <Row>
                         <Col span={5}>
-                            <Typography.Title level={2}>Hello {name}</Typography.Title>
+                            <Typography.Title level={2}> Hello {name}</Typography.Title>
                         </Col>
                         <Col span={11}></Col>
                         <Col span={8}>
@@ -244,7 +249,6 @@ function Todos(props) {
                             <Card> </Card>
                         </Col>
                     </Row>
-
                 </Content>
             </Layout>
         </Layout >)

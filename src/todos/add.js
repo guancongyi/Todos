@@ -1,5 +1,7 @@
 import React,{ useState} from 'react';
 import { Input } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+
 function Add(props){
     let {add} = props;
     let [val, setVal] = useState("");
@@ -7,9 +9,9 @@ function Add(props){
 
             <Input 
                 // id="new-todo"
-                placeholder="What needs to be done?"
-                style={{ width: '80%', height: '70%' }}
-
+                prefix={<EditOutlined />}
+                placeholder="  What needs to be done?"
+                size="large"
                 value={val}
                 onChange={({target})=>{
                     setVal(target.value)
