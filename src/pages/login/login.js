@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Form, Input, Checkbox, message, Row, Col, Card } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import MyGoogleLogin from './googleLogin';
-// import MyReCaptcha from './recaptcha';
 import '../static/css/login.css';
 
 const FormItem = Form.Item;
@@ -67,13 +65,11 @@ function Login(props) {
                                                 message.error("Incorrect, Please check username/password.")
                                             }
                                         });
-                                       
+
                                     }
                                 }}>
                                 Log in</Button>
                             <div>
-                                <span ><MyGoogleLogin {...props}/></span>
-
                                 <a style={{ float: 'right' }} href="/register">
                                     Register
                                     </a>

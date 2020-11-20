@@ -7,9 +7,6 @@ import Page404 from './page404';
 
 function App (props){
     let [userInfo, setUserInfo] = useState({
-        // login:false,
-        // id: "",
-        // name: ""
         login:true,
         id: "ggg",
         name: "ggg"
