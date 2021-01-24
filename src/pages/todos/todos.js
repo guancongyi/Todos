@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Radio, Card, Row, Col, Typography, Modal } from 'antd';
 import axios from 'axios';
-import "../static/css/todos.css"
+import "../../static/css/todos.css"
 import Title from './title';
 import Add from './add';
 import TodosList from './todosList';
